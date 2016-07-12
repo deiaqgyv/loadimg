@@ -9,9 +9,10 @@ var loadImg = function(pics, callback){
     var progress = function(w){
     	// 百分比进度条 基于jQuery动画
     	// .loading-progress 动画lay;  .loading-num b 显示的进度数字
-        $('.loading-progress').animate({width:w}, 100, 'linear', function(){
-            $(".loading-num b").html(w);
-        });
+        // $('.loading-progress').animate({width:w}, 100, 'linear', function(){
+        //     $(".loading-num b").html(w);
+        // });
+        console.log(w);
     }
     var load = function(){
         img.src = pics[index];
@@ -22,7 +23,7 @@ var loadImg = function(pics, callback){
             if (index < len) {
                 load();
             }else{
-                callback()
+                callback();
             }
         }
         return img;
