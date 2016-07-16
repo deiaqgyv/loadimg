@@ -1,60 +1,35 @@
-// loadImg  图片预加载
-// @param   {Array}     预加载图片的对象数组
-// author   huhl
-var loadImg = function(pics, callback){
-    var index = 0;
-    var len = pics.length;
-    var img = new Image();
-    var flag = false;
-    var progress = function(w){
-    	// 百分比进度条 基于jQuery动画
-    	// .loading-progress 动画lay;  .loading-num b 显示的进度数字
-        // $('.loading-progress').animate({width:w}, 100, 'linear', function(){
-        //     $(".loading-num b").html(w);
-        // });
-        console.log(w);
+/*
+* Jquery 图片的预加载与延时加载
+*
+* @description loadimg();
+* @param   {arr}            存放图片路径的数组或img的jquery对象
+* @param   {funLoading}     每一个单独的图片加载完成后执行的操作
+* @param   {funOnLoad}      全部图片都加载完成后的操作
+* @param   {funOnError}     单个图片加载出错时的操作
+*
+* BY Huhl
+*/
+function loadimg(arr,funLoading,funOnLoad,funOnError){
+    var numLoaded=0,
+    numError=0,
+    isObject=Object.prototype.toString.call(arr)==="[object Object]" ? true : false;
+    var arr=isObject ? arr.get() : arr;
+    for(a in arr){
+        var src = isObject ? $(arr[a]).data("src") : arr[a];
+        preload(src,arr[a]);
     }
-    var load = function(){
-        img.src = pics[index];
-        img.onload = function() {
-            //console.log('第' + index + '个img被预加载', img.src);
-            progress(Math.floor(((index + 1) / len) * 100) + "%");   // 计算进度百分比
-            index ++ ;
-            if (index < len) {
-                load();
-            }else{
-                callback();
-            }
+    function preload(src,obj){
+        var img=new Image();
+        img.onload=function(){
+            numLoaded++;
+            funLoading && funLoading(numLoaded,arr.length,src,obj);
+            funOnLoad && numLoaded==arr.length && funOnLoad(numError);
+        };
+        img.onerror=function(){
+            numLoaded++;
+            numError++;
+            funOnError && funOnError(numLoaded,arr.length,src,obj);
         }
-        return img;
+        img.src=src;
     }
-    if(len > 0){
-        load();
-    }else{
-        progress("100%");
-    }
-    return {
-        pics: pics,
-        load: load,
-        progress: progress
-    };
 }
-
-
-var pics = [
-    "http://mat1.gtimg.com/news/2014/guoqing/where/jyindexBg.jpg",
-    "http://mat1.gtimg.com/news/2014/guoqing/where/jymap.png",
-    "http://mat1.gtimg.com/news/2014/guoqing/where/jyplan.png",
-    "http://mat1.gtimg.com/news/2014/guoqing/where/jytclogo.png",
-    "http://mat1.gtimg.com/news/2014/guoqing/where/loadPic.png",
-    "http://mat1.gtimg.com/news/2014/guoqing/where/jycur.png"
-];
-
-
-// 调用
-loadImg(pics, function(){
-    setTimeout(function(){
-    	// load隐藏
-        // $(".loadPage").fadeOut();
-    }, 500);
-});

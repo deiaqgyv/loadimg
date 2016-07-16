@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>demo</title>
+<style>
+	button { background: #f60; color: #fff; cursor: pointer; border:0; padding:15px 0; width: 200px;}
+	button.active { background: #eee; color: #999;}
+	#picList { width: 500px; margin:0 auto 20px;}
+	#picList img,#picList2 img { max-width: 100px;}
+	#loadProgress { width: 500px; height: 20px; margin:20px auto; position: relative;}
+	.picListText { float: left; width: 0; height: 20px; background: #f90;}
+	.picListText b { position: absolute; left:0; top: 0; width: 100%; line-height: 20px; text-align: center;}
+</style>
+</head>
+<body>
+
+<div class="">
+	<button type="button" id="getPic">读取图片数组</button>
+	<button type="button" id="getPic2">读取单个图片</button>
+</div>
+<div id="loadProgress">
+	<div class="picListText">
+		<b></b>
+	</div>
+</div>
+<div id="picList"></div>
+<div id="picList2">
+	<img class="loadSinglePic" src="http://zj.189.cn/ct10000v5/wap/new/static/images/common/loading.gif" data-src="http://mat1.gtimg.com/news/2014/guoqing/where/jyindexBg.jpg" alt="">
+</div>
+
+<script src="http://c.csdnimg.cn/public/common/libs/jquery/jquery-1.11.1.min.js"></script>
+<script src="loadimg.js"></script>
+<script>
+;(function($){
+	var pics = [
+	    "http://mat1.gtimg.com/news/2014/guoqing/where/jyindexBg.jpg",
+	    "http://mat1.gtimg.com/news/2014/guoqing/where/jymap.png",
+	    "http://mat1.gtimg.com/news/2014/guoqing/where/jyplan.png",
+	    "http://mat1.gtimg.com/news/2014/guoqing/where/jytclogo.png",
+	    "http://mat1.gtimg.com/news/2014/guoqing/where/loadPic.png",
+	    "http://mat1.gtimg.com/news/2014/guoqing/where/jycur.png"
+	];
+
+	var imgonload=function(errors){
+        /*errors：加载出错的图片数量；*/
+		console.log("loaded,"+errors+" images loaded error!");
+	}
+	 
+	var funloading=function(n,total,src,obj){
+        /*
+        n：已加载完成的数量；
+        total：总共需加载的图片数量；
+        src：当前加载完成的图片路径；
+        obj：当loadimg函数中传入的arr为存放图片路径的数组时，obj=src，是图片路径，
+               当arr为jquery对象时，obj是当前加载完成的img dom对象。
+       */
+		console.log(n+"of"+total+" pic loaded.",src);
+		var newimg = document.createElement("img");
+		newimg.src=src;
+		$("#picList").append(newimg).fadeIn();
+
+		// 进度
+		var w = Math.floor(((n) / total) * 100) + "%";
+		$('.picListText').animate({width:w}, 100, 'linear', function(){
+            $(".picListText b").html(w);
+        });
+	}
+	var funOnError=function(n,total,src,obj){
+		console.log("the "+n+"st img loaded Error!"+src);
+	}
+	// 调用
+	$("#getPic").on("click",function(){
+		$("#picList").html("");
+		loadimg(pics, funloading,imgonload,funOnError);
+	})
+
+})(jQuery);
+	
+;(function($){
+
+	var imgonload=function(errors){
+        /*errors：加载出错的图片数量；*/
+		console.log("loaded,"+errors+" images loaded error!");
+	}
+	 
+	var funloading_obj=function(n,total,src,obj){
+		console.log(n+"of"+total+" pic loaded.",src);
+		$(obj).attr("src",src);
+		$(obj).fadeIn(200);
+	}
+	 
+	var funOnError=function(n,total,src,obj){
+		console.log("the "+n+"st img loaded Error!"+src);
+	}
+	// 调用
+	$("#getPic2").on("click",function(){
+		loadimg($(".loadSinglePic"), funloading_obj,imgonload,funOnError);
+	})
+})(jQuery);
+</script>
+</body>
+</html>
